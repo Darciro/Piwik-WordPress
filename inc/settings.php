@@ -33,8 +33,8 @@ class PWP_Settings {
     public function add_plugin_page() {
 
     	add_options_page(
-    		__( 'Piwik for WordPress', 'pwp_textdomain' ), 
-    		__( 'Piwik', 'pwp_textdomain' ), 
+    		__( 'Piwik/Matomo for WordPress', 'pwp_textdomain' ),
+    		__( 'Piwik/Matomo', 'pwp_textdomain' ),
     		'manage_options',
     		PWP_SLUG,
     		array( $this, 'create_admin_page' )
@@ -78,13 +78,25 @@ class PWP_Settings {
         ); 
 
         add_settings_field(
-            'pwp_script',
-            __( 'Piwik site ID: ', 'pwp_textdomain' ),
-            array( $this, 'pwp_script_callback' ),
+            'pwp_site_id',
+            __( 'Enter the site ID: ', 'pwp_textdomain' ),
+            array( $this, 'pwp_site_id_callback' ),
             'pwp',
             'general_setting_section',
             [
-                'label_for' => 'pwp_script',
+                'label_for' => 'pwp_site_id',
+                'class' => 'form-field',
+            ]
+        );
+
+        add_settings_field(
+            'pwp_matomo_subdomain',
+            __( 'Enter your analytics subdomain: ', 'pwp_textdomain' ),
+            array( $this, 'pwp_analytics_subdomain_callback' ),
+            'pwp',
+            'general_setting_section',
+            [
+                'label_for' => 'pwp_matomo_subdomain',
                 'class' => 'form-field',
             ]
         );
@@ -104,10 +116,16 @@ class PWP_Settings {
     public function input_validate_sanitize( $input ) {
     	$output = array();
 
-    	if( isset( $input['pwp_script'] ) ){
-    		// $output['pwp_script'] = stripslashes( wp_filter_post_kses( addslashes( $input['pwp_script'] ) ) );
-    		$output['pwp_script'] = $input['pwp_script'];
+    	if( isset( $input['pwp_site_id'] ) ){
+    		// $output['pwp_site_id'] = stripslashes( wp_filter_post_kses( addslashes( $input['pwp_site_id'] ) ) );
+    		$output['pwp_site_id'] = $input['pwp_site_id'];
     	}
+
+    	if( isset( $input['pwp_matomo_subdomain'] ) ){
+    		$output['pwp_matomo_subdomain'] = stripslashes( wp_filter_post_kses( addslashes( $input['pwp_matomo_subdomain'] ) ) );
+    		// $output['pwp_matomo_subdomain'] = $input['pwp_matomo_subdomain'];
+    	}
+
     	return $output;
     }
 
@@ -115,11 +133,30 @@ class PWP_Settings {
      * Input HTML
      * 
      */
-    function pwp_script_callback( $args ) {
+    function pwp_site_id_callback( $args ) {
         $options = get_option( 'pwp_options' ); ?>
-        <input id="<?php echo esc_attr( $args['label_for'] ); ?>" name="pwp_options[<?php echo esc_attr( $args['label_for'] ); ?>]" type="number" value="<?php echo $options['pwp_script']; ?>">
+        <input id="<?php echo esc_attr( $args['label_for'] ); ?>"
+               name="pwp_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+               type="number"
+               value="<?php echo $options['pwp_site_id']; ?>"
+               placeholder="0"
+        >
 	    <p class="description">
-	        <?php echo __( 'Define site Piwik unique identification.', 'pwp_textdomain' ); ?>
+	        <?php echo __( 'Define site Piwik/Matomo unique identification.', 'pwp_textdomain' ); ?>
+	    </p>
+        <?php
+    }
+
+    function pwp_analytics_subdomain_callback( $args ) {
+        $options = get_option( 'pwp_options' ); ?>
+        <input id="<?php echo esc_attr( $args['label_for'] ); ?>"
+               name="pwp_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+               type="text"
+               value="<?php echo $options['pwp_matomo_subdomain']; ?>"
+               placeholder="http://"
+        >
+	    <p class="description">
+	        <?php echo __( 'The address where your Piwik/Matomo instance is running.', 'pwp_textdomain' ); ?>
 	    </p>
         <?php
     }

@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Piwik WordPress
+Plugin Name: Piwik/Matomo WordPress
 Plugin URI: https://github.com/Darciro/Piwik-WordPress
-Description: Add a Piwik script to track down your web traffic
-Version: 1.0
+Description: Adds a script code to track down your web traffic in the #1 secure ppen web analytics platform - Matomo, former Piwik
+Version: 2.0
 Author: Ricardo Carvalho
 Author URI: https://galdar.com.br
 License: GNU GPLv3
@@ -45,21 +45,22 @@ class PiwikWP {
 	public function piwik_script(){
 		$options = get_option( 'pwp_options');  ?>
 
-		<!-- Piwik -->
+		<!-- Matomo -->
 		<script type="text/javascript">
-			var _paq = _paq || [];
+			var _paq = window._paq || [];
+			/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
 			_paq.push(['trackPageView']);
 			_paq.push(['enableLinkTracking']);
 			(function() {
-				var u="//analise.cultura.gov.br/";
-				_paq.push(['setTrackerUrl', u+'piwik.php']);
-				_paq.push(['setSiteId', <?php echo $options['pwp_script']; ?>]);
+				var u="<?php echo $options['pwp_matomo_subdomain']; ?>";
+				_paq.push(['setTrackerUrl', u+'matomo.php']);
+				_paq.push(['setSiteId', <?php echo $options['pwp_site_id']; ?>]);
 				var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-				g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+				g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
 			})();
 		</script>
-		<noscript><p><img src="//analise.cultura.gov.br/piwik.php?idsite=<?php echo $options['pwp_script']; ?>" style="border:0;" alt="" /></p></noscript>
-		<!-- End Piwik Code -->
+		<!-- End Matomo Code -->
+
 		<?php
 	}
 
